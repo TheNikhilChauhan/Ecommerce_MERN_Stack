@@ -1,20 +1,24 @@
 import express from "express";
 import { configDotenv } from "dotenv";
 import cookieParser from "cookie-parser";
+import userRoutes from "./routes/routes.js";
+import cors from "cors";
 
 const app = express();
 
-import fileUpload from "express-fileupload";
 import ErrorHandler from "./utils/ErrorHandler.js";
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+  })
+);
 app.use(cookieParser());
-app.use("/test", (req, res) => {
-  res.send("Hello World");
-});
+app.use("/", express.static("uploads"));
 
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-app.use(fileUpload({ useTempFiles: true }));
 
 //config
 if (process.env.NODE_ENV !== "PRODUCTION") {
@@ -22,6 +26,9 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
     path: "backend/config/.env",
   });
 }
+
+//import middleware
+app.use("/api/v2/user", userRoutes);
 
 // it's for ErrorHandling
 app.use(ErrorHandler);
