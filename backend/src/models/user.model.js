@@ -1,4 +1,9 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import JWT from "jsonwebtoken";
+import crypto from "crypto";
+import dotenv from "dotenv";
+dotenv.config();
 
 const userSchema = mongoose.Schema(
   {
@@ -31,15 +36,16 @@ const userSchema = mongoose.Schema(
 
 // encrypt password
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  if (!this.isModified("password")) {
+    return next();
+  }
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
 userSchema.methods = {
   //compare password
   comparePassword: async function (enteredPassword) {
-    return await bcrypt.comparePassword(enteredPassword, this.password);
+    return await bcrypt.compare(enteredPassword, this.password);
   },
 
   //generate JWT Token
@@ -58,9 +64,9 @@ userSchema.methods = {
 
   //generate forgot password
   generateForgotPasswordToken: function () {
-    const forgotToken = crypto.randomBytes(20).toString("hex");
+    const forgotToken = crypto.randomBytes(32).toString("hex");
 
-    //sae to db
+    //save to db
     this.forgotPasswordToken = crypto
       .createHash("sha256")
       .update(forgotToken)
