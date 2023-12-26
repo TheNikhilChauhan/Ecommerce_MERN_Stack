@@ -37,7 +37,7 @@ const SignUp = () => {
           <form className=" space-y-6 " onSubmit={handleSubmit}>
             <div>
               <label
-                htmlFor="fullname"
+                htmlFor="name"
                 className="block text-sm font-medium text-gray-700"
               >
                 Full Name
@@ -45,8 +45,8 @@ const SignUp = () => {
               <div>
                 <input
                   type="text"
-                  name="text"
-                  autoComplete="fullname"
+                  name="name"
+                  autoComplete="name"
                   required
                   placeholder="Enter your Name"
                   className="appearance-none block w-full px-3 py-2 mt-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
