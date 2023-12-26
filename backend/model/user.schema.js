@@ -56,8 +56,41 @@ const userSchema = mongoose.Schema(
         type: String,
       },
     },
+    resetPasswordToken: String,
+    resetPasswordTime: Date,
   },
   {
     timestamps: true,
   }
 );
+
+//hash password
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+  this.password = await bcrypt.hash(this.password, 10);
+});
+
+//jwt token
+userSchema.methods.getJwtToken = function () {
+  return jwt.sign(
+    {
+      id: this._id,
+      role: this.role,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_EXPIRY,
+    }
+  );
+};
+
+//compare password
+userSchema.methods.comparePassword = async function (plainTextPassword) {
+  return await bcrypt.compare(plainTextPassword, this.password);
+};
+
+const User = mongoose.model("User", userSchema);
+
+export default User;
